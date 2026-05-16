@@ -1,22 +1,30 @@
-# dhanushkakumara.github.io
-This is a personal page that creates using GitHub and this can be used as your personal website with a top-level domain.
+# Dhanushka Perumbuli Personal Website
 
-## Create
+This repository contains the source for my personal website and work portfolio.
 
-Refer to this GitHub document to learn how to create your own page for your profile or for your organization.  [Click here to learn GitHub pages](https://pages.github.com)
+## Purpose
 
+The site is maintained as a personal branding and portfolio presence for:
 
-## Usage
+- software engineering experience
+- freelance and consulting work
+- selected project highlights
+- direct contact and professional profiles
 
-This can be used as your primary resume to people who interest you to hire or freelance.\
-Can be updated in few seconds.
+## Stack
 
+The current site is a lightweight static website built with:
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.\
-(Ex: New features that should include in personal resume)
+- HTML
+- CSS
+- vanilla JavaScript
 
+## Notes
+
+- This repository is not published as a reusable starter template.
+- Third-party assets included in the project remain under their own licenses.
+- The main pages are `index.html` and `work/index.html`.
 
 ## License
-Copyright © 2021 Dhanushka Perumbuli\
-This project is [MIT](https://choosealicense.com/licenses/mit/) licensed.
+
+This project is protected under the terms described in [LICENSE](LICENSE).
