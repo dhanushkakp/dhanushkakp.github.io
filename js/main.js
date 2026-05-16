@@ -141,12 +141,11 @@ if ("IntersectionObserver" in window) {
 }
 
 const syncHeaderState = () => {
+  const shouldShowWorkShortcut = () => window.scrollY > 48;
+
   if (!header) {
     if (workShortcut) {
-      const maxScroll =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-      workShortcut.classList.toggle("is-visible", progress > 0.55);
+      workShortcut.classList.toggle("is-visible", shouldShowWorkShortcut());
     }
     return;
   }
@@ -154,10 +153,7 @@ const syncHeaderState = () => {
   header.classList.toggle("is-scrolled", window.scrollY > 16);
 
   if (workShortcut) {
-    const maxScroll =
-      document.documentElement.scrollHeight - window.innerHeight;
-    const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-    workShortcut.classList.toggle("is-visible", progress > 0.55);
+    workShortcut.classList.toggle("is-visible", shouldShowWorkShortcut());
   }
 };
 

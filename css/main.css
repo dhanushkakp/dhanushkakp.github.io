@@ -1060,12 +1060,6 @@ main {
   z-index: 12;
 }
 
-.work-shortcut::after {
-  content: "\2197";
-  font-size: 1rem;
-  line-height: 1;
-}
-
 .work-shortcut:hover,
 .work-shortcut:focus-visible {
   box-shadow: 0 22px 44px rgba(0, 0, 0, 0.34);
@@ -1078,8 +1072,28 @@ main {
   transform: translateY(0);
 }
 
+.work-shortcut-icon {
+  align-items: center;
+  background: rgba(16, 19, 29, 0.16);
+  border-radius: 999px;
+  display: inline-flex;
+  height: 1.8rem;
+  justify-content: center;
+  width: 1.8rem;
+}
+
+.work-shortcut-icon svg {
+  display: block;
+  height: 0.95rem;
+  width: 0.95rem;
+}
+
 :root[data-theme="light"] .work-shortcut {
   box-shadow: 0 16px 34px rgba(70, 56, 38, 0.18);
+}
+
+:root[data-theme="light"] .work-shortcut-icon {
+  background: rgba(24, 32, 49, 0.12);
 }
 
 :root[data-theme="light"] .hero-tags li,
@@ -1237,6 +1251,8 @@ main {
 
   .work-shortcut {
     bottom: 0.85rem;
+    min-height: 3rem;
+    padding: 0.75rem 1rem;
     right: 0.85rem;
   }
 }
