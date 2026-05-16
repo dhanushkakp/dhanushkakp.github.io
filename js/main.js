@@ -11,6 +11,7 @@ const navLinks = Array.from(
 const revealItems = document.querySelectorAll(".reveal");
 const sections = document.querySelectorAll("section[id]");
 const themeColorMeta = document.querySelector("meta[name='theme-color']");
+const workShortcut = document.querySelector(".work-shortcut");
 
 const normalizePageUrl = () => {
   const { pathname, search, hash } = window.location;
@@ -141,10 +142,23 @@ if ("IntersectionObserver" in window) {
 
 const syncHeaderState = () => {
   if (!header) {
+    if (workShortcut) {
+      const maxScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      workShortcut.classList.toggle("is-visible", progress > 0.55);
+    }
     return;
   }
 
   header.classList.toggle("is-scrolled", window.scrollY > 16);
+
+  if (workShortcut) {
+    const maxScroll =
+      document.documentElement.scrollHeight - window.innerHeight;
+    const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+    workShortcut.classList.toggle("is-visible", progress > 0.55);
+  }
 };
 
 syncHeaderState();
