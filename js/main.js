@@ -1,289 +1,117 @@
-'use strict';
-// var mainDocument = $(document);
+document.documentElement.classList.add("js");
 
-// init foundation
-// $(document).foundation();
+const themeStorageKey = "dp-theme";
+const root = document.documentElement;
+const themeToggle = document.querySelector(".theme-toggle");
+const header = document.querySelector(".site-header");
+const navToggle = document.querySelector(".nav-toggle");
+const navLinks = Array.from(document.querySelectorAll(".site-nav a[href^='#']"));
+const revealItems = document.querySelectorAll(".reveal");
+const sections = document.querySelectorAll("section[id]");
+const themeColorMeta = document.querySelector("meta[name='theme-color']");
 
-// Init all plugin when document is ready 
-$(document).on('ready', function () {
-	// 0. Init console to avoid error
-	var method;
-	var noop = function () { };
-	var methods = [
-		'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
-		'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
-		'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
-		'timeStamp', 'trace', 'warn'
-	];
-	var length = methods.length;
-	var console = (window.console = window.console || {});
-	var contextWindow = $(window);
-	var $root = $('html, body');
-	while (length--) {
-		method = methods[length];
-		// Only stub undefined methods.
-		if (!console[method]) {
-			console[method] = noop;
-		}
-	}
+const getPreferredTheme = () => {
+    const storedTheme = window.localStorage.getItem(themeStorageKey);
+    if (storedTheme === "light" || storedTheme === "dark") {
+        return storedTheme;
+    }
 
-	// 1. Background image as data attribut 
-	var list = $('.bg-img');
-	for (var i = 0; i < list.length; i++) {
-		var src = list[i].getAttribute('data-image-src');
-		list[i].style.backgroundImage = "url('" + src + "')";
-		list[i].style.backgroundRepeat = "no-repeat";
-		list[i].style.backgroundPosition = "center";
-		list[i].style.backgroundSize = "cover";
-	}
-	// Background color as data attribut
-	var list = $('.bg-color');
-	for (var i = 0; i < list.length; i++) {
-		var src = list[i].getAttribute('data-bgcolor');
-		list[i].style.backgroundColor = src;
-	}
+    return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+};
 
-	// 2. Init Coutdown clock
-	try {
-		// check if clock is initialised
-		$('.clock-countdown').downCount({
-			date: $('.site-config').attr('data-date'),
-			offset: +10
-		});
-	}
-	catch (error) {
-		// Clock error : clock is unavailable
-		console.log("clock disabled/unavailable");
-	}
+const applyTheme = (theme) => {
+    root.dataset.theme = theme;
 
-	// 3. Show/hide menu when icon is clicked
-	var menuItems = $('.all-menu-wrapper .nav-link');
-	var menuIcon = $('.menu-icon, #navMenuIcon');
-	var menuBlock = $('.all-menu-wrapper');
-	var reactToMenu = $ ('.page-main, .navbar-sidebar, .page-cover')
-	var menuLinks = $(".navbar-mainmenu a, .navbar-sidebar a");
-	// Menu icon clicked
-	menuIcon.on('click', function () {
-		menuIcon.toggleClass('menu-visible');
-		menuBlock.toggleClass('menu-visible');
-		menuItems.toggleClass('menu-visible');
-		reactToMenu.toggleClass('menu-visible');
-		return false;
-	});
+    if (themeToggle) {
+        themeToggle.setAttribute("aria-pressed", String(theme === "light"));
+        themeToggle.setAttribute("aria-label", theme === "light" ? "Switch to dark mode" : "Switch to light mode");
+    }
 
-	// Hide menu after a menu item clicked
-	menuLinks.on('click', function () {
-		menuIcon.removeClass('menu-visible');
-		menuBlock.removeClass('menu-visible');
-		menuItems.removeClass('menu-visible');
-		reactToMenu.removeClass('menu-visible');
-		return true;
-	});
+    if (themeColorMeta) {
+        themeColorMeta.setAttribute("content", theme === "light" ? "#f3efe5" : "#10131d");
+    }
+};
 
-	// 4 Carousel Slider
-	new Swiper('.carousel-swiper-beta-demo .swiper-container', {
-		pagination: '.carousel-swiper-beta-demo .items-pagination',
-		paginationClickable: '.carousel-beta-alpha-demo .items-pagination',
-		nextButton: '.carousel-swiper-beta-demo .items-button-next',
-		prevButton: '.carousel-swiper-beta-demo .items-button-prev',
-		loop: true,
-		grabCursor: true,
-		centeredSlides: true,
-		autoplay: 5000,
-		autoplayDisableOnInteraction: false,
-		slidesPerView: 1,
-		spaceBetween: 0,
-		breakpoints: {
-			1024: {
-				slidesPerView: 1,
-			},
-			800: {
-				slidesPerView: 1,
-				spaceBetween: 0
-			},
-			640: {
-				slidesPerView: 1,
-				spaceBetween: 0
-			},
-			440: {
-				slidesPerView: 1,
-				spaceBetween: 0
-			}
-		}
-	});
-	// 4.1 Slideshow slider
-	var imageList = $('.slide-show .img');
-	var imageSlides = [];
-	for (var i = 0; i < imageList.length; i++) {
-		var src = imageList[i].getAttribute('data-src');
-		imageSlides.push({ src: src });
-	}
-	$('.slide-show').vegas({
-		delay: 5000,
-		shuffle: true,
-		slides: imageSlides,
-		animation: ['kenburnsUp', 'kenburnsDown', 'kenburnsLeft', 'kenburnsRight']
-	});
-	
-	// 5. Init video background
-	var videoBg = $('.video-container video, .video-container object');
+applyTheme(getPreferredTheme());
 
-	// 6. Prepare content for animation
-	$('.section .content .anim.anim-wrapped').wrap("<span class='anim-wrapper'></span>");
+if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+        const nextTheme = root.dataset.theme === "light" ? "dark" : "light";
+        window.localStorage.setItem(themeStorageKey, nextTheme);
+        applyTheme(nextTheme);
+    });
+}
 
-	// 7. Init fullPage.js plugin
-	var pageSectionDivs = $('.page-fullpage .section');
-	var headerLogo = $('.header-top .logo');
-	var bodySelector = $('body');
-	var sectionSelector = $('.section');
-	var headerContainer = $('.hh-header');
-	var slideElem = $('.slide');
-	var arrowElem = $('.p-footer .arrow-d');
-	var pageElem = $('.section');
-	var pageSections = [];
-	var pageAnchors = [];
-	var nextSectionDOM;
-	var nextSection;
-	var fpnavItem;
-	var mainPage = $('#mainpage');
-	var sendEmailForm = $('.send_email_form');
-	var sendMessageForm = $('.send_message_form');
-	var scrollOverflow = true;
-	var css3 = true;
-	// disable scroll overflow on small device
-	if (contextWindow.width() < 601) {
-		scrollOverflow = false;
-		css3 = false;
-	}
-	if (contextWindow.height() < 480) {
-		scrollOverflow = false;
-		css3 = false;
-	}
-	// Get sections name
-	for (var i = 0; i < pageSectionDivs.length; i++) {
-		pageSections.push(pageSectionDivs[i]);
-	}
-	window.asyncEach(pageSections, function (pageSection, cb) {
-		var anchor = pageSection.getAttribute('data-section');
-		pageAnchors.push(anchor + "");
-		cb();
-	}, function (err) {
-		// Init plugin
-		if (mainPage.width()) {
-			// config fullpage.js
-			mainPage.fullpage({
-				menu: '#qmenu',
-				anchors: pageAnchors,
-				verticalCentered: false,
-				css3: css3,
-				navigation: true,
-				responsiveWidth: 601,
-				responsiveHeight: 480,
-				scrollOverflow: scrollOverflow,
-				scrollOverflowOptions: {
-					click: true,
-					submit: true,
-				},
-				normalScrollElements: '.section .scrollable',
-				afterRender: function () {
-					// Fix video background
-					videoBg.maximage('maxcover');
+if (navToggle && header) {
+    navToggle.addEventListener("click", () => {
+        const isOpen = header.classList.toggle("nav-open");
+        navToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+}
 
-					// Fix for internet explorer : adjust content height
-					// Detect IE 6-11
-					var isIE = /*@cc_on!@*/false || !!document.documentMode;
-					if (isIE) {
-						var contentColumns = $('.section .content .c-columns');
-						contentColumns.height(contextWindow.height())
-						for (var i = 0; i < contentColumns.length; i++) {
-							if (contentColumns[i].height <= contextWindow.height()) {
-								contentColumns[i].style.height = "100vh";
-							}
-						}
-					}
+for (const link of navLinks) {
+    link.addEventListener("click", () => {
+        if (!header || !header.classList.contains("nav-open")) {
+            return;
+        }
 
-					// init contact form
-					// Default server url
-					var newsletterServerUrl = './ajaxserver/serverfile.php';
-					var messageServerUrl = './ajaxserver/serverfile.php';
+        header.classList.remove("nav-open");
+        navToggle?.setAttribute("aria-expanded", "false");
+    });
+}
 
-					// Use form define action attribute
-					if (sendEmailForm.attr('action') && (sendEmailForm.attr('action')) != '') {
-						newsletterServerUrl = sendEmailForm.attr('action');
-					}
-					if (sendMessageForm.attr('action') && (sendMessageForm.attr('action') != '')) {
-						messageServerUrl = sendMessageForm.attr('action');
-					}
+if ("IntersectionObserver" in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+            if (!entry.isIntersecting) {
+                continue;
+            }
 
-					sendEmailForm.initForm({
-						serverUrl: newsletterServerUrl,
-					});
-					sendMessageForm.initForm({
-						serverUrl: messageServerUrl,
-					});
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+        }
+    }, {
+        threshold: 0.16
+    });
 
-				},
-				afterResize: function () {
-					var pluginContainer = $(this);
-					$.fn.fullpage.reBuild();
-				},
-				onLeave: function (index, nextIndex, direction) {
-					// Behavior when a full page is leaved
-					arrowElem.addClass('gone');
-					pageElem.addClass('transition');
-					slideElem.removeClass('transition');
-					pageElem.removeClass('transition');
-				},
-				afterLoad: function (anchorLink, index) {
-					// Behavior after a full page is loaded
-					// hide or show clock
-					if ($('.section.active').hasClass('hide-clock')) {
-						headerContainer.addClass('gone');
-					} else {
-						headerContainer.removeClass('gone');
-					}
-				}
-			});
+    for (const item of revealItems) {
+        revealObserver.observe(item);
+    }
+} else {
+    for (const item of revealItems) {
+        item.classList.add("is-visible");
+    }
+}
 
-		}
-	});
-	// Scroll to fullPage.js next/previous section
-	$('.scrolldown a, .scroll.down').on('click', function () {
-		try {
-			// fullpage scroll
-			$.fn.fullpage.moveSectionDown();
-		} catch (error) {
-			// normal scroll
-			$root.animate({
-				scrollTop: window.innerHeight
-			}, 400, function () {
-			});
-		}
+if ("IntersectionObserver" in window) {
+    const sectionObserver = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+            if (!entry.isIntersecting) {
+                continue;
+            }
 
-	});
+            const id = entry.target.getAttribute("id");
+            for (const link of navLinks) {
+                link.classList.toggle("is-active", link.getAttribute("href") === `#${id}`);
+            }
+        }
+    }, {
+        rootMargin: "-35% 0px -45% 0px",
+        threshold: 0
+    });
 
-	// 8. Hide some ui on scroll
-	var scrollHeight = $(document).height() - contextWindow.height();
-	contextWindow.on('scroll', function () {
-		var scrollpos = $(this).scrollTop();
-		var siteHeaderFooter = $('.page-footer, .page-header');
+    for (const section of sections) {
+        sectionObserver.observe(section);
+    }
+}
 
-		// if (scrollpos > 10 && scrollpos < scrollHeight - 100) {
-		if (scrollpos > 100) {
-			siteHeaderFooter.addClass("scrolled");
-		}
-		else {
-			siteHeaderFooter.removeClass("scrolled");
-		}
-	});
+const syncHeaderState = () => {
+    if (!header) {
+        return;
+    }
 
+    header.classList.toggle("is-scrolled", window.scrollY > 16);
+};
 
-	// 9. Page Loader : hide loader when all are loaded
-	contextWindow.on('load', function () {
-		$('#page-loader').addClass('p-hidden');
-		$('.section').addClass('anim');
-	});
-
-
-});
-
+syncHeaderState();
+window.addEventListener("scroll", syncHeaderState, {passive: true});
